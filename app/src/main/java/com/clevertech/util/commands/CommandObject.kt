@@ -1,5 +1,5 @@
 package com.clevertech.util.commands
 
-enum class CommandType {
+enum class CommandObject {
     LIGHT
 }

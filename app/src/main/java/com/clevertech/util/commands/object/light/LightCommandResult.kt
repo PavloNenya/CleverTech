@@ -1,4 +1,4 @@
-package com.clevertech.util.commands.light
+package com.clevertech.util.commands.`object`.light
 
 import com.clevertech.util.commands.CommandResult
 
