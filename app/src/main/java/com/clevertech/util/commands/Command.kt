@@ -5,20 +5,20 @@ import com.clevertech.util.commands.action.Action
 abstract class Command {
 
     fun execute() /*: CommandResult */{
-        val command = toJson()
+        val command = toString()
 
 //      TODO  return parseCommandResult();
     }
-    fun toJson(): String {
+    override fun toString(): String {
         return "{ " +
-                "\"object\":${getObject()}," +
-                "\"type\":${getAction()}, " +
-                "\"context\":${getContext()},  " +
+                "\"object\":\"${getObject()}\"," +
+                "\"action\":\"${getAction()}\", " +
+                "\"context\":${getContext()}  " +
                 "}"
     }
 
     abstract fun getObject(): CommandObject
-    abstract fun getAction(): Action
-    abstract fun getContext(): CommandContext
+    abstract fun getAction(): Action?
+    abstract fun getContext(): CommandContext?
     abstract fun deserialize(string: String) : Command
 }

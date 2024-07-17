@@ -27,15 +27,15 @@ import androidx.lifecycle.lifecycleScope
 import com.clevertech.network.http.HttpUtil
 import com.clevertech.services.CustomSpeechRecognizer
 import com.clevertech.ui.theme.CleverTechTheme
+import com.clevertech.util.WordParser
+import com.clevertech.util.commands.Command
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import okhttp3.Request
 import java.util.regex.Pattern
 
 class MainActivity : ComponentActivity() {
     private val dynamicText = mutableStateOf("Sample text")
     private lateinit var voiceInputCallback :  (Bundle?) -> Int
-    private val httpUtil = HttpUtil()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -61,10 +61,11 @@ class MainActivity : ComponentActivity() {
 
 
                 val res = results.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)
-                val isToggleLight: Boolean = parseWords(res)
-                val r = buildRequest(isToggleLight)
+                val command : Command? = WordParser.parseWords(res)
+                val r = HttpUtil.buildRequest(command)
                 lifecycleScope.launch(Dispatchers.IO) {
-                    val response = httpUtil.getResponse(r)
+                    val response = HttpUtil.getResponse(r)
+                    response?.body?.close()
                 }
 
                 return 1
@@ -99,33 +100,6 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
-    }
-
-    private fun buildRequest(toggle: Boolean): Request {
-        val mode = if(toggle) {
-            "H"
-        } else {
-            "L"
-        }
-        val r = Request.Builder()
-            .url("$BASE_URL:$PORT/$mode")
-            .build()
-        return r
-    }
-
-    private fun parseWords(words: ArrayList<String>?): Boolean {
-        var res = false
-        words?.let {
-            println(words)
-            if(it[0].lowercase() == "увімкнути світло" || it[0].lowercase() == "ввімкнути світло") {
-                res = true
-            }
-            if(it[0].lowercase() == "вимкнути світло") {
-                res = false
-            }
-        }
-
-        return res
     }
 
 }
